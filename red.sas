@@ -1,0 +1,61 @@
+libname module8 "C:\Users\redua\Desktop\module8";
+data fibroid;
+set module8.fibroid;
+run;
+proc corr data= Fibroid;
+	var VitD FPG;
+run;
+proc corr data= Fibroid;
+	var VitD FPG;
+	partial age;
+run;
+Data Fibroid1;
+SET FIBROID;
+length VitDscore $12.;
+if VitD =. then VitDscore='';
+else if  0< VITD<= 20 THEN VitDscore="insufficient";
+else if VITD >20 THEN VitDscore ="sufficient";
+RUN;
+proc print data=fibroid1;
+run;
+data Fibroid1;
+set work.fibroid1;
+run;
+proc logistic data = Fibroid1;
+   class VitDscore(ref = "sufficient") / param = ref;
+	model fibroid(event = '1') = vitDscore ;
+     oddsratio VitDscore /diff=ref;
+	run;
+proc glm data =fibroid;
+   class sunexp;
+	model vitd= sunexp;
+	means sunexp / hovtest= BF welch;
+	run;
+
+proc glm data =fibroid;
+   class sunexp;
+	model vitd= sunexp;
+	means sunexp/tukey cldiff;
+	run;
+
+data Ulcer;
+set module8.ulcer;
+run;
+
+proc genmod data= ulcer;
+	class treatment;
+	model LOT=treatment/dist=poisson link=log;
+	lsmeans treatment / ilink cl;
+run;
+proc genmod data= ulcer;
+	class treatment severity;
+	model time= treatment severity age/dist=poisson link=log;
+	lsmeans treatment /ilink CL;
+run;
+proc phreg data=ulcer;
+class treatment;
+model time*status(0)= treatment;
+hazardratio treatment;
+run;
+
+
