@@ -1,0 +1,70 @@
+---
+title: "pro"
+author: "Rediet Idris"
+date: "8/7/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+df = read.csv("Heart.csv") # reading data saved in Working Directory and assigning to data.frame df
+str(df) # displays structure of data frame df
+df$AHD = factor(df$AHD) # to convert variable AHD from character to factor
+names(df) # displays names of columns of df 
+summary(df) # summarizes data
+attach(df) # attaching df to R's search path
+set.seed(872020)
+train = sample(1:303, size = 203, replace = FALSE) 
+df_train = df[train,] 
+df_test = df[-train,] 
+# Logistic Regression
+glm.fit = glm(AHD ~ ., data = df_train, family = binomial) 
+summary(glm.fit) 
+glm.probs = predict(glm.fit, type = "response", newdata = df_test) 
+glm.pred = ifelse(glm.probs > 0.5, "Yes", "No") 
+table(Predicted = glm.pred, Actual = df_test$AHD)  
+mean(glm.pred == df_test$AHD, na.rm=T) 
+
+```
+```{r}
+library(tree)
+attach(df) # attaching df to R's search path
+set.seed(872020)
+train = sample(1:303, size = 203, replace = FALSE) 
+df_train = df[train,] 
+df_test = df[-train,] 
+```
+
+
+```{r}
+library(MASS) # MASS package must be installed
+library(leaps) # leaps package must be installed 
+str(Boston) # displays structure of data.
+names(Boston) # shows names of columns (variables) of Boston data set. To know more about this data set, you may type ?Boston in the R Console window.
+
+regfit.full = regsubsets(medv~., data = Boston, nvmax = 13) 
+summary(regfit.full) 
+
+
+```
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r}
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
